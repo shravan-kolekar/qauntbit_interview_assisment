@@ -1,26 +1,24 @@
 # Qauntbit Interview Assessment
 
-## Introduction
+## About
 
-**Qauntbit Interview Assessment** is a Frappe-based application designed to manage and streamline the interview assessment process for job applicants.
+Qauntbit Interview Assessment is a Frappe-based application designed to manage and streamline the complete interview assessment process for job applicants.
 
-The application helps HR teams and interviewers to:
+The application helps HR teams and interviewers manage:
 
-* Configure Interview Round Types.
-* Define round-wise Skills and Assessment Criteria.
-* Configure Rating Scales.
-* Assign interview rounds to Job Openings.
-* Automatically determine the applicable interview round for an applicant.
-* Load round-wise assessment criteria automatically.
-* Rate applicants based on predefined skills.
-* Calculate weighted scores automatically.
-* Calculate overall ratings and percentages.
-* Record interviewer remarks and feedback.
-* Manage applicant recommendations.
-* Move selected applicants to the next interview round.
-* Keep applicants on hold when required.
-* Stop the interview process for applicants marked as not suitable.
-* Generate detailed interview assessment reports.
+- Interview Round Types
+- Assessment Skills and Criteria
+- Rating Scales
+- Job Opening Interview Rounds
+- Job Applicant Assessments
+- Skill-wise Ratings
+- Weightage Calculations
+- Overall Ratings
+- Interview Recommendations
+- Next Round Processing
+- Hold Applicants
+- Not Suitable Applicants
+- Interview Assessment Reports
 
 ---
 
@@ -28,370 +26,122 @@ The application helps HR teams and interviewers to:
 
 ## 1. Interview Round Type
 
-Configure different interview rounds such as:
+The system allows users to create and manage different interview rounds.
 
-* HR Round
-* Technical Round
-* Managerial Round
-* Final Round
+Examples:
 
-Each round can have its own weightage.
+- HR Round
+- Technical Round
+- Managerial Round
+- Final Round
 
-## 2. Skills / Assessment Criteria
+Each round can be configured according to the interview process.
 
-Configure assessment criteria for each Interview Round Type.
+---
+
+## 2. Interview Assessment Criteria
+
+Assessment skills and criteria can be configured for each interview round.
+
+### Example: HR Round
+
+- Communication
+- Confidence
+- Attitude
+- Behaviour
+
+### Example: Technical Round
+
+- Technical Knowledge
+- Programming Skills
+- Problem Solving
+- Subject Knowledge
+
+Each assessment criterion can have its own weightage.
+
+---
+
+## 3. Rating Scale
+
+The application allows the configuration of rating scales for evaluating applicants.
 
 Example:
 
-### HR Round
+| Rating | Description |
+|---|---|
+| 1 | Poor |
+| 2 | Below Average |
+| 3 | Average |
+| 4 | Good |
+| 5 | Excellent |
 
-* Communication
-* Confidence
-* Attitude
-* Behaviour
+---
 
-### Technical Round
+## 4. Job Opening Configuration
 
-* Technical Knowledge
-* Programming Skills
-* Problem Solving
-* Subject Knowledge
-
-Each skill can have an individual weightage.
-
-> **Note:** The total weightage of all skills within an interview round should be 100%.
-
-## 3. Job Opening Interview Configuration
-
-Interview rounds are configured inside the Job Opening.
+Interview rounds can be configured for a Job Opening.
 
 Example:
 
-| Sr. No. | Interview Round |
-| ------- | --------------- |
-| 1       | HR Round        |
-| 2       | Technical Round |
-| 3       | Manager Round   |
-| 4       | Final Round     |
+| Sequence | Interview Round |
+|---|---|
+| 1 | HR Round |
+| 2 | Technical Round |
+| 3 | Managerial Round |
+| 4 | Final Round |
 
-The sequence controls the applicant's interview progression.
+The sequence determines the order in which the applicant progresses through the interview process.
 
-## 4. Interview Assessment
+---
 
-The Interview Assessment form allows interviewers to evaluate applicants.
+## 5. Job Applicant
 
-The form can contain:
+The applicant is linked with the Job Opening and enters the interview assessment process.
 
-* Applicant
-* Job Opening
-* Interview Round
-* Interview Round Type
-* Interviewer
-* Assessment Date
-* Rating Table
-* Overall Rating
-* Percentage
-* Recommendation
-* Feedback / Remarks
+The system uses the applicant information to track the interview progress.
 
-## 5. Automatic Criteria Loading
+---
 
-When an Interview Round Type is selected, the application automatically loads the related skills and assessment criteria into the Interview Assessment Rating Table.
+## 6. Interview Assessment
 
-This reduces manual data entry and ensures consistent evaluations.
+The Interview Assessment form is used by the interviewer to evaluate the applicant.
 
-## 6. Weighted Score Calculation
+The assessment can include:
 
-The weighted score is calculated automatically.
+- Job Applicant
+- Job Opening
+- Interview Round
+- Interview Round Type
+- Interviewer
+- Assessment Date
+- Assessment Criteria
+- Rating
+- Remarks
+- Weightage
+- Weighted Score
+- Overall Rating
+- Recommendation
+
+---
+
+## 7. Automatic Assessment Criteria Loading
+
+When an interview round is selected, the application automatically loads the related assessment skills and criteria.
+
+This helps to:
+
+- Reduce manual data entry
+- Maintain consistency
+- Improve assessment accuracy
+- Save interviewer time
+
+---
+
+## 8. Weighted Score Calculation
+
+The application automatically calculates the weighted score based on the rating and weightage.
+
+### Formula
 
 ```text
-Weighted Score = (Rating × Skill Weightage) / 100
-```
-
-Example:
-
-```text
-Rating = 4
-Skill Weightage = 70%
-
-Weighted Score = (4 × 70) / 100
-               = 2.8
-```
-
-## 7. Recommendation Management
-
-The interviewer can select one of the following recommendations:
-
-* Select / Proceed
-* Hold
-* Not Suitable for the Post
-
-### Select / Proceed
-
-The applicant proceeds to the next configured interview round.
-
-### Hold
-
-The applicant remains on hold for further review.
-
-### Not Suitable for the Post
-
-The applicant will not proceed to the next interview round, and the recruitment process can be closed.
-
-## 8. Interview Assessment Details Report
-
-The application includes an **Interview Assessment Details Report** that helps HR and management review:
-
-* Applicant details
-* Job Opening
-* Interviewer details
-* Interview Round
-* Skills
-* Skill Weightage
-* Interview Round Weightage
-* Ratings
-* Weighted Scores
-* Recommendations
-* Overall Rating
-
-The report provides a consolidated view of the applicant's interview performance.
-
----
-
-# Workflow Diagram
-
-```text
-┌─────────────────────────────┐
-│   Interview Round Type      │
-└──────────────┬──────────────┘
-               │
-               ▼
-┌─────────────────────────────┐
-│ Skills / Assessment Criteria│
-│   + Skill Weightage         │
-└──────────────┬──────────────┘
-               │
-               ▼
-┌─────────────────────────────┐
-│        Rating Scale         │
-└──────────────┬──────────────┘
-               │
-               ▼
-┌─────────────────────────────┐
-│        Job Opening          │
-└──────────────┬──────────────┘
-               │
-               ▼
-┌─────────────────────────────┐
-│ Job Opening Interview       │
-│ Round Type Child Table      │
-│ + Round Sequence            │
-└──────────────┬──────────────┘
-               │
-               ▼
-┌─────────────────────────────┐
-│        Job Applicant        │
-└──────────────┬──────────────┘
-               │
-               ▼
-┌─────────────────────────────┐
-│   Interview Assessment      │
-│            Form             │
-└──────────────┬──────────────┘
-               │
-               ▼
-┌─────────────────────────────┐
-│ Select Current Interview    │
-│         Round               │
-└──────────────┬──────────────┘
-               │
-               ▼
-┌─────────────────────────────┐
-│ Automatically Load          │
-│ Round-wise Criteria         │
-└──────────────┬──────────────┘
-               │
-               ▼
-┌─────────────────────────────┐
-│ Enter Ratings & Remarks     │
-│ in Assessment Rating Table  │
-└──────────────┬──────────────┘
-               │
-               ▼
-┌─────────────────────────────┐
-│ Calculate Weighted Score    │
-└──────────────┬──────────────┘
-               │
-               ▼
-┌─────────────────────────────┐
-│ Calculate Overall Rating    │
-│ and Percentage              │
-└──────────────┬──────────────┘
-               │
-               ▼
-┌─────────────────────────────┐
-│ Select Recommendation       │
-└──────────────┬──────────────┘
-               │
-        ┌──────┼───────┐
-        │      │       │
-        ▼      ▼       ▼
-   ┌────────┐ ┌──────┐ ┌──────────────────┐
-   │ Select │ │ Hold │ │ Not Suitable     │
-   │        │ │      │ │ for the Post     │
-   └───┬────┘ └──────┘ └────────┬─────────┘
-       │                          │
-       ▼                          ▼
-┌──────────────────┐     ┌──────────────────┐
-│ Move to Next     │     │ Close Application│
-│ Interview Round  │     │ / Stop Process   │
-└──────────────────┘     └──────────────────┘
-```
-
----
-
-# Mermaid Workflow Diagram
-
-The following Mermaid diagram can also be used directly in GitHub README files:
-
-```mermaid
-flowchart TD
-
-    A[Interview Round Type]
-    B[Skills / Assessment Criteria]
-    C[Rating Scale]
-    D[Job Opening]
-    E[Job Opening Interview Round Type<br/>Child Table]
-    F[Job Applicant]
-    G[Interview Assessment Form]
-    H[Select Current Interview Round]
-    I[Load Round-wise Criteria]
-    J[Enter Ratings and Remarks]
-    K[Calculate Weighted Score]
-    L[Calculate Overall Rating and Percentage]
-    M[Select Recommendation]
-
-    N[Select / Proceed]
-    O[Hold]
-    P[Not Suitable for the Post]
-
-    Q[Move to Next Interview Round]
-    R[Keep Applicant on Hold]
-    S[Close Application]
-
-    A --> B
-    B --> C
-    C --> D
-    D --> E
-    E --> F
-    F --> G
-    G --> H
-    H --> I
-    I --> J
-    J --> K
-    K --> L
-    L --> M
-
-    M --> N
-    M --> O
-    M --> P
-
-    N --> Q
-    O --> R
-    P --> S
-```
-
----
-
-# Installation
-
-You can install this app using the [Frappe Bench](https://github.com/frappe/bench) CLI.
-
-```bash
-cd $PATH_TO_YOUR_BENCH
-
-bench get-app $URL_OF_THIS_REPO --branch develop
-
-bench --site your-site-name install-app qauntbit_interview_assisment
-```
-
-Replace:
-
-* `$PATH_TO_YOUR_BENCH` with your Bench directory.
-* `$URL_OF_THIS_REPO` with your Git repository URL.
-* `your-site-name` with your Frappe site name.
-
----
-
-# Contributing
-
-This app uses `pre-commit` for code formatting and linting.
-
-Install and enable pre-commit:
-
-```bash
-cd apps/qauntbit_interview_assisment
-
-pre-commit install
-```
-
-Pre-commit is configured to use the following tools:
-
-* Ruff
-* ESLint
-* Prettier
-* PyUpgrade
-
----
-
-# CI
-
-This app can use GitHub Actions for Continuous Integration.
-
-The following workflows can be configured:
-
-* **CI:** Installs the application and runs unit tests.
-* **Linters:** Runs code quality and security checks.
-
-The CI process can include:
-
-* Frappe unit tests
-* Ruff
-* ESLint
-* Prettier
-* Frappe Semgrep Rules
-* pip-audit
-
----
-
-# Main Process Summary
-
-```text
-Master Configuration
-        ↓
-Interview Round Configuration
-        ↓
-Job Opening Configuration
-        ↓
-Applicant Selection
-        ↓
-Interview Assessment
-        ↓
-Skill-wise Rating
-        ↓
-Automatic Score Calculation
-        ↓
-Overall Rating
-        ↓
-Recommendation
-        ↓
-Select → Next Round
-Hold → Review Later
-Not Suitable → Close Application
-```
-
----
-
-# License
-
-MIT
+Weighted Score = (Rating × Weightage) / 100
