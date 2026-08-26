@@ -1,483 +1,424 @@
-// Copyright (c) 2026, Quantbit Tchnologe PVT LTD and contributors
-// For license information, please see license.txt
-
-
 frappe.ui.form.on("Interview Assesment Form", {
 
-    // =====================================================
-    // REFRESH
-    // =====================================================
+    onload: function(frm) {
+        if (frm.is_new()) {
+            frm.set_value(
+                "date_of_interview",
+                frappe.datetime.now_datetime()
+            );
+        }
+
+        frm.interview_round_list = [];
+        frm.available_round_data = null;
+
+        set_interview_round_query(frm);
+    },
 
     refresh: function(frm) {
 
-        if (!frm.is_new()) {
-
-            calculate_average_rating(frm);
-            calculate_weighted_percentage(frm);
-
-        }
-
-
-        // Set today's date only if empty
-
-        if (!frm.doc.date_of_interview) {
-
+        if (!frm.doc.date) {
             frm.set_value(
-                "date_of_interview",
-                frappe.datetime.nowdate()
+                "date",
+                frappe.datetime.now_datetime()
             );
-
         }
 
+        set_interview_round_query(frm);
+
+        if (
+            frm.is_new() &&
+            frm.doc.applicent &&
+            frm.doc.posting_applyed_for
+        ) {
+            load_next_available_interview_round(frm);
+        }
+
+        calculate_overall_assessment(frm);
     },
 
+    applicent: function(frm) {
 
-    // =====================================================
-    // INTERVIEW ROUND
-    // =====================================================
+        frm.set_value(
+            "interview_round_type",
+            ""
+        );
 
-    interview_round: function(frm) {
+        frm.clear_table(
+            "rating_table"
+        );
 
-        if (frm.doc.interview_round === "1") {
+        frm.refresh_field(
+            "rating_table"
+        );
 
-            frm.set_value(
-                "interview_type",
-                "Hr Round"
-            );
+        frm.interview_round_list = [];
+        frm.available_round_data = null;
 
+        set_interview_round_query(frm);
+
+        if (!frm.doc.applicent) {
+            return;
         }
 
-        else if (frm.doc.interview_round === "2") {
+        setTimeout(function() {
 
-            frm.set_value(
-                "interview_type",
-                "Manager Round"
-            );
+            load_next_available_interview_round(frm);
 
-        }
-
-        else if (frm.doc.interview_round === "3") {
-
-            frm.set_value(
-                "interview_type",
-                "Supervisor Round"
-            );
-
-        }
-
-        else {
-
-            frm.set_value(
-                "interview_type",
-                ""
-            );
-
-        }
-
+        }, 700);
     },
-
-
-    // =====================================================
-    // POSTING APPLIED FOR
-    // =====================================================
 
     posting_applyed_for: function(frm) {
 
-        console.log(
-            "Posting Applied For:",
-            frm.doc.posting_applyed_for
+        frm.set_value(
+            "interview_round_type",
+            ""
         );
-
-
-        // =================================================
-        // CLEAR OLD SKILLS
-        // =================================================
 
         frm.clear_table(
-            "interview_assesmant_rating_table"
+            "rating_table"
         );
-
 
         frm.refresh_field(
-            "interview_assesmant_rating_table"
+            "rating_table"
         );
 
+        frm.interview_round_list = [];
+        frm.available_round_data = null;
 
-        // =================================================
-        // RESET CALCULATIONS
-        // =================================================
+        set_interview_round_query(frm);
 
-        frm.set_value(
-            "average_score_auto",
-            0
-        );
+        if (frm.doc.posting_applyed_for) {
 
-        frm.set_value(
-            "overall_percentage",
-            0
-        );
-
-
-        // =================================================
-        // IF NO JOB OPENING
-        // =================================================
-
-        if (!frm.doc.posting_applyed_for) {
-
-            return;
+            load_next_available_interview_round(frm);
 
         }
-
-
-        // =================================================
-        // GET SKILLS FROM SKILLS FORM
-        // =================================================
-
-        frappe.call({
-
-            method: "frappe.client.get_list",
-
-            args: {
-
-                doctype: "Skills Form",
-
-                filters: {
-
-                    job_opening:
-                        frm.doc.posting_applyed_for,
-
-                    active: 1
-
-                },
-
-                fields: [
-
-                    "name",
-                    "skill_name",
-                    "job_opening",
-                    "weitage",
-                    "active"
-
-                ],
-
-                limit_page_length: 100
-
-            },
-
-
-            callback: function(r) {
-
-                console.log(
-                    "Skills Response:",
-                    r.message
-                );
-
-
-                // =================================================
-                // NO SKILLS FOUND
-                // =================================================
-
-                if (
-                    !r.message ||
-                    r.message.length === 0
-                ) {
-
-                    frappe.msgprint(
-                        "No Skills found for this Job Opening."
-                    );
-
-                    return;
-
-                }
-
-
-                // =================================================
-                // LOAD SKILLS INTO CHILD TABLE
-                // =================================================
-
-                r.message.forEach(function(skill) {
-
-                    let row = frm.add_child(
-                        "interview_assesmant_rating_table"
-                    );
-
-
-                    // ---------------------------------------------
-                    // Skill
-                    // ---------------------------------------------
-
-                    row.skills_name =
-                        skill.name;
-
-
-                    // ---------------------------------------------
-                    // Job Opening
-                    // ---------------------------------------------
-
-                    row.posting_applyed =
-                        skill.job_opening;
-
-
-                    // ---------------------------------------------
-                    // Default Rating
-                    // ---------------------------------------------
-
-                    row.rating = 0;
-
-
-                    // ---------------------------------------------
-                    // Skill Weightage
-                    // ---------------------------------------------
-
-                    row.weightage =
-                        flt(skill.weitage);
-
-
-                    // ---------------------------------------------
-                    // Initial Weighted Score
-                    // ---------------------------------------------
-
-                    row.weighted_score = 0;
-
-                });
-
-
-                // =================================================
-                // REFRESH CHILD TABLE
-                // =================================================
-
-                frm.refresh_field(
-                    "interview_assesmant_rating_table"
-                );
-
-
-                frappe.msgprint(
-                    r.message.length +
-                    " skill(s) loaded successfully."
-                );
-
-
-                // =================================================
-                // CALCULATE
-                // =================================================
-
-                calculate_average_rating(frm);
-
-                calculate_weighted_percentage(frm);
-
-            },
-
-
-            error: function(err) {
-
-                console.error(
-                    "Error while loading Skills:",
-                    err
-                );
-
-
-                frappe.msgprint(
-                    "Error while loading Skills. Check browser console."
-                );
-
-            }
-
-        });
-
     },
 
+    interview_round_type: function(frm) {
 
-    // =====================================================
-    // VALIDATE
-    // =====================================================
+        if (!frm.doc.interview_round_type) {
 
-    validate: function(frm) {
+            frm.clear_table(
+                "rating_table"
+            );
 
-        calculate_average_rating(frm);
+            frm.refresh_field(
+                "rating_table"
+            );
 
-        calculate_weighted_percentage(frm);
+            calculate_overall_assessment(frm);
+
+            return;
+        }
+
+        load_skills_for_selected_round(frm);
 
     }
 
 });
 
 
+function load_next_available_interview_round(frm) {
 
-// =========================================================
-// CHILD TABLE EVENTS
-// =========================================================
+    let applicant =
+        frm.doc.applicent;
 
-frappe.ui.form.on(
-    "Interview Assesmant Rating Table",
-    {
+    let job_opening =
+        frm.doc.posting_applyed_for;
 
-        // =================================================
-        // RATING CHANGE
-        // =================================================
+    if (!applicant) {
 
-        rating: function(frm, cdt, cdn) {
+        frm.interview_round_list = [];
 
-            let row =
-                locals[cdt][cdn];
+        set_interview_round_query(frm);
 
+        return;
+    }
 
-            console.log(
-                "Skill:",
-                row.skills_name
-            );
+    if (!job_opening) {
 
-            console.log(
-                "Rating Value:",
-                row.rating
-            );
+        frappe.db.get_value(
+            "Job Applicant",
+            applicant,
+            "job_title"
+        ).then(function(r) {
 
+            if (
+                r.message &&
+                r.message.job_title
+            ) {
 
-            // ---------------------------------------------
-            // Validate Rating
-            // ---------------------------------------------
-
-            let rating =
-                flt(row.rating);
-
-
-            if (rating < 0) {
-
-                frappe.model.set_value(
-                    cdt,
-                    cdn,
-                    "rating",
-                    0
+                frm.set_value(
+                    "posting_applyed_for",
+                    r.message.job_title
                 );
-
-                rating = 0;
 
             }
 
+        });
 
-            if (rating > 5) {
+        return;
+    }
+
+    frappe.call({
+
+        method: "frappe.client.get",
+
+        args: {
+
+            doctype: "Job Opening",
+
+            name: job_opening
+
+        },
+
+        callback: function(job_response) {
+
+            if (!job_response.message) {
+
+                frm.interview_round_list = [];
+
+                set_interview_round_query(frm);
 
                 frappe.msgprint(
-                    "Rating cannot be greater than 5."
+                    __("Job Opening not found")
                 );
-
-                frappe.model.set_value(
-                    cdt,
-                    cdn,
-                    "rating",
-                    5
-                );
-
-            }
-
-
-            // ---------------------------------------------
-            // Calculate Row Weighted Score
-            // ---------------------------------------------
-
-            calculate_row_weighted_score(
-                frm,
-                cdt,
-                cdn
-            );
-
-
-            // ---------------------------------------------
-            // Calculate Overall
-            // ---------------------------------------------
-
-            calculate_average_rating(frm);
-
-            calculate_weighted_percentage(frm);
-
-        },
-
-
-        // =================================================
-        // WEIGHTAGE CHANGE
-        // =================================================
-
-        weightage: function(frm, cdt, cdn) {
-
-            calculate_row_weighted_score(
-                frm,
-                cdt,
-                cdn
-            );
-
-
-            calculate_weighted_percentage(frm);
-
-        },
-
-
-        // =================================================
-        // SKILL CHANGE
-        // =================================================
-
-        skills_name: function(frm, cdt, cdn) {
-
-            let row =
-                locals[cdt][cdn];
-
-
-            if (!row.skills_name) {
-
-                frappe.model.set_value(
-                    cdt,
-                    cdn,
-                    "weightage",
-                    0
-                );
-
-                frappe.model.set_value(
-                    cdt,
-                    cdn,
-                    "weighted_score",
-                    0
-                );
-
-                calculate_weighted_percentage(frm);
 
                 return;
-
             }
 
+            let rounds =
+                job_response.message
+                    .job_interview_round || [];
 
-            // =================================================
-            // GET WEIGHTAGE FROM SKILLS FORM
-            // =================================================
+            rounds =
+                rounds
+                    .filter(function(row) {
 
-            frappe.db.get_value(
-                "Skills Form",
-                row.skills_name,
-                "weitage"
-            ).then(function(r) {
+                        return (
+                            cint(row.active) === 1 &&
+                            row.interview_round
+                        );
 
-                if (
-                    r &&
-                    r.message
-                ) {
+                    })
+                    .sort(function(a, b) {
 
-                    let weightage =
-                        flt(r.message.weitage);
+                        return (
+                            cint(a.idx) -
+                            cint(b.idx)
+                        );
 
+                    });
 
-                    frappe.model.set_value(
-                        cdt,
-                        cdn,
-                        "weightage",
-                        weightage
+            if (!rounds.length) {
+
+                frm.interview_round_list = [];
+
+                set_interview_round_query(frm);
+
+                frappe.msgprint(
+                    __("No active interview rounds found in Job Opening")
+                );
+
+                return;
+            }
+
+            frappe.call({
+
+                method: "frappe.client.get_list",
+
+                args: {
+
+                    doctype:
+                        "Interview Assesment Form",
+
+                    filters: {
+
+                        applicent:
+                            applicant
+
+                    },
+
+                    fields: [
+
+                        "name",
+
+                        "interview_round_type",
+
+                        "recommendation",
+
+                        "docstatus",
+
+                        "creation"
+
+                    ],
+
+                    order_by:
+                        "creation asc",
+
+                    limit_page_length:
+                        1000
+
+                },
+
+                callback: function(assessment_response) {
+
+                    let previous_assessments =
+                        assessment_response.message || [];
+
+                    previous_assessments =
+                        previous_assessments.filter(
+                            function(row) {
+
+                                return (
+                                    row.name !==
+                                    frm.doc.name
+                                );
+
+                            }
+                        );
+
+                    let completed_rounds = {};
+
+                    previous_assessments.forEach(
+                        function(row) {
+
+                            if (
+                                row.interview_round_type
+                            ) {
+
+                                completed_rounds[
+                                    row.interview_round_type
+                                ] = row;
+
+                            }
+
+                        }
                     );
 
+                    let next_round = null;
 
-                    calculate_row_weighted_score(
-                        frm,
-                        cdt,
-                        cdn
-                    );
+                    if (
+                        !previous_assessments.length
+                    ) {
 
+                        next_round =
+                            rounds[0];
 
-                    calculate_weighted_percentage(frm);
+                    } else {
+
+                        for (
+                            let i = 0;
+                            i < rounds.length;
+                            i++
+                        ) {
+
+                            let current_round =
+                                rounds[i];
+
+                            let current_round_name =
+                                current_round.interview_round;
+
+                            let previous_record =
+                                completed_rounds[
+                                    current_round_name
+                                ];
+
+                            if (
+                                !previous_record
+                            ) {
+
+                                if (i === 0) {
+
+                                    next_round =
+                                        current_round;
+
+                                    break;
+
+                                }
+
+                                let previous_round =
+                                    rounds[i - 1];
+
+                                let previous_round_record =
+                                    completed_rounds[
+                                        previous_round.interview_round
+                                    ];
+
+                                if (
+                                    previous_round_record &&
+                                    is_recommended(
+                                        previous_round_record.recommendation
+                                    )
+                                ) {
+
+                                    next_round =
+                                        current_round;
+
+                                }
+
+                                break;
+
+                            }
+
+                        }
+
+                    }
+
+                    frm.interview_round_list = [];
+
+                    frm.available_round_data = null;
+
+                    if (next_round) {
+
+                        frm.interview_round_list =
+                            [
+                                next_round.interview_round
+                            ];
+
+                        frm.available_round_data =
+                            next_round;
+
+                        set_interview_round_query(frm);
+
+                        frm.refresh_field(
+                            "interview_round_type"
+                        );
+
+                        if (
+                            !frm.doc.interview_round_type ||
+                            frm.doc.interview_round_type !==
+                            next_round.interview_round
+                        ) {
+
+                            frm.set_value(
+                                "interview_round_type",
+                                next_round.interview_round
+                            );
+
+                        }
+
+                    } else {
+
+                        set_interview_round_query(frm);
+
+                        frm.refresh_field(
+                            "interview_round_type"
+                        );
+
+                        if (
+                            previous_assessments.length
+                        ) {
+
+                            frappe.msgprint(
+                                __(
+                                    "No next interview round is available. This Person is not recommended for the next round."
+                                )
+                            );
+
+                        }
+
+                    }
 
                 }
 
@@ -485,250 +426,470 @@ frappe.ui.form.on(
 
         }
 
-    }
-);
+    });
+
+}
 
 
+function is_recommended(value) {
 
-// =========================================================
-// CALCULATE ROW WEIGHTED SCORE
-// =========================================================
-
-function calculate_row_weighted_score(
-    frm,
-    cdt,
-    cdn
-) {
-
-    let row =
-        locals[cdt][cdn];
-
-
-    let rating =
-        flt(row.rating);
-
-
-    let weightage =
-        flt(row.weightage);
-
-
-    // =====================================================
-    // RATING OUT OF 5
-    // =====================================================
-
-    let weighted_score = 0;
-
-
-    if (
-        rating > 0 &&
-        weightage > 0
-    ) {
-
-        weighted_score =
-            (rating / 5) *
-            weightage;
-
+    if (!value) {
+        return false;
     }
 
+    value =
+        String(value)
+            .trim()
+            .toLowerCase();
 
-    // =====================================================
-    // ROUND TO 2 DECIMAL
-    // =====================================================
+    let allowed_values = [
 
-    weighted_score =
-        Math.round(
-            weighted_score * 100
-        ) / 100;
+        "recommended",
 
+        "recommend",
 
-    // =====================================================
-    // SET WEIGHTED SCORE
-    // =====================================================
+        "select",
 
-    frappe.model.set_value(
-        cdt,
-        cdn,
-        "weighted_score",
-        weighted_score
-    );
+        "selected",
 
+        "proceed",
 
-    console.log(
-        "--------------------------------------"
-    );
+        "approved",
 
-    console.log(
-        "Skill:",
-        row.skills_name
-    );
+        "yes"
 
-    console.log(
-        "Rating:",
-        rating
-    );
+    ];
 
-    console.log(
-        "Weightage:",
-        weightage
-    );
-
-    console.log(
-        "Weighted Score:",
-        weighted_score
-    );
-
-    console.log(
-        "--------------------------------------"
+    return (
+        allowed_values.includes(
+            value
+        )
     );
 
 }
 
 
+function set_interview_round_query(frm) {
 
-// =========================================================
-// AVERAGE RATING CALCULATION
-// =========================================================
+    frm.set_query(
+        "interview_round_type",
+        function() {
 
-function calculate_average_rating(frm) {
+            let rounds =
+                frm.interview_round_list || [];
 
-    let rows =
-        frm.doc.interview_assesmant_rating_table || [];
+            if (!rounds.length) {
+
+                return {
+
+                    filters: {
+
+                        name:
+                            ["in", [""]]
+
+                    }
+
+                };
+
+            }
+
+            return {
+
+                filters: {
+
+                    name:
+                        ["in", rounds]
+
+                }
+
+            };
+
+        }
+    );
+
+}
 
 
-    // =====================================================
-    // NO SKILLS
-    // =====================================================
+function get_round_weightage_from_job_opening(
+    frm,
+    selected_round
+) {
 
-    if (rows.length === 0) {
+    return new Promise(
+        function(resolve) {
 
-        frm.set_value(
-            "average_score_auto",
-            0
+            if (
+                !selected_round
+            ) {
+
+                resolve(0);
+
+                return;
+
+            }
+
+            if (
+                frm.available_round_data &&
+                frm.available_round_data.interview_round ===
+                selected_round
+            ) {
+
+                resolve(
+                    flt(
+                        frm.available_round_data.weitage
+                    )
+                );
+
+                return;
+
+            }
+
+            let job_opening =
+                frm.doc.posting_applyed_for;
+
+            if (!job_opening) {
+
+                resolve(0);
+
+                return;
+
+            }
+
+            frappe.call({
+
+                method: "frappe.client.get",
+
+                args: {
+
+                    doctype:
+                        "Job Opening",
+
+                    name:
+                        job_opening
+
+                },
+
+                callback: function(r) {
+
+                    let weightage = 0;
+
+                    if (
+                        r.message &&
+                        r.message.job_interview_round
+                    ) {
+
+                        let round =
+                            r.message
+                                .job_interview_round
+                                .find(
+                                    function(row) {
+
+                                        return (
+                                            row.interview_round ===
+                                            selected_round
+                                        );
+
+                                    }
+                                );
+
+                        if (round) {
+
+                            weightage =
+                                flt(
+                                    round.weitage
+                                );
+
+                        }
+
+                    }
+
+                    resolve(
+                        weightage
+                    );
+
+                }
+
+            });
+
+        }
+    );
+
+}
+
+
+function load_skills_for_selected_round(frm) {
+
+    let selected_round =
+        frm.doc.interview_round_type;
+
+    if (!selected_round) {
+
+        frm.clear_table(
+            "rating_table"
+        );
+
+        frm.refresh_field(
+            "rating_table"
+        );
+
+        calculate_overall_assessment(
+            frm
         );
 
         return;
 
     }
 
+    frm.clear_table(
+        "rating_table"
+    );
 
-    // =====================================================
-    // VARIABLES
-    // =====================================================
+    get_round_weightage_from_job_opening(
+        frm,
+        selected_round
+    ).then(
+        function(round_weightage) {
 
-    let total_rating = 0;
+            frappe.call({
 
-    let rating_count = 0;
+                method:
+                    "frappe.client.get_list",
 
+                args: {
 
-    // =====================================================
-    // LOOP THROUGH ALL SKILLS
-    // =====================================================
+                    doctype:
+                        "Skills Form",
 
-    rows.forEach(function(row) {
+                    filters: {
 
-        let rating =
-            parseFloat(row.rating);
+                        interview_round:
+                            selected_round
 
+                    },
 
-        // =================================================
-        // ONLY COUNT VALID RATINGS
-        // =================================================
+                    fields: [
 
-        if (
-            !isNaN(rating) &&
-            rating > 0
-        ) {
+                        "name",
 
-            total_rating += rating;
+                        "interview_round",
 
-            rating_count++;
+                        "weitage"
+
+                    ],
+
+                    limit_page_length:
+                        1000
+
+                },
+
+                callback: function(r) {
+
+                    if (
+                        !r.message ||
+                        !r.message.length
+                    ) {
+
+                        frm.refresh_field(
+                            "rating_table"
+                        );
+
+                        calculate_overall_assessment(
+                            frm
+                        );
+
+                        frappe.msgprint(
+                            __(
+                                "No Skills found for selected Interview Round"
+                            )
+                        );
+
+                        return;
+
+                    }
+
+                    r.message.forEach(
+                        function(skill) {
+
+                            let row =
+                                frm.add_child(
+                                    "rating_table"
+                                );
+
+                            row.interview_round =
+                                skill.interview_round;
+
+                            row.skills_name =
+                                skill.name;
+
+                            row.weightage =
+                                flt(
+                                    skill.weitage
+                                );
+
+                            row.interview_type_weightage =
+                                flt(
+                                    round_weightage
+                                );
+
+                            row.rating = 0;
+
+                            row.weighted_score = 0;
+
+                        }
+                    );
+
+                    frm.refresh_field(
+                        "rating_table"
+                    );
+
+                    calculate_overall_assessment(
+                        frm
+                    );
+
+                }
+
+            });
 
         }
-
-    });
-
-
-    // =====================================================
-    // CALCULATE AVERAGE
-    // =====================================================
-
-    let average_rating = 0;
-
-
-    if (rating_count > 0) {
-
-        average_rating =
-            total_rating /
-            rating_count;
-
-    }
-
-
-    // =====================================================
-    // ROUND TO 2 DECIMAL
-    // =====================================================
-
-    average_rating =
-        Math.round(
-            average_rating * 100
-        ) / 100;
-
-
-    // =====================================================
-    // MAXIMUM RATING = 5
-    // =====================================================
-
-    if (average_rating > 5) {
-
-        average_rating = 5;
-
-    }
-
-
-    // =====================================================
-    // SET AVERAGE RATING
-    // =====================================================
-
-    frm.set_value(
-        "average_score_auto",
-        average_rating
-    );
-
-
-    console.log(
-        "Total Rating:",
-        total_rating
-    );
-
-    console.log(
-        "Rating Count:",
-        rating_count
-    );
-
-    console.log(
-        "Average Rating:",
-        average_rating
     );
 
 }
 
 
+frappe.ui.form.on(
+    "Interview Assesmant Rating Table",
+    {
 
-// =========================================================
-// WEIGHTED OVERALL PERCENTAGE
-// =========================================================
+        rating: function(
+            frm,
+            cdt,
+            cdn
+        ) {
 
-function calculate_weighted_percentage(frm) {
+            let row =
+                locals[cdt][cdn];
+
+            calculate_row_weighted_score(
+                frm,
+                row
+            );
+
+        },
+
+        weightage: function(
+            frm,
+            cdt,
+            cdn
+        ) {
+
+            let row =
+                locals[cdt][cdn];
+
+            calculate_row_weighted_score(
+                frm,
+                row
+            );
+
+        },
+
+        interview_type_weightage: function(
+            frm,
+            cdt,
+            cdn
+        ) {
+
+            let row =
+                locals[cdt][cdn];
+
+            calculate_row_weighted_score(
+                frm,
+                row
+            );
+
+        }
+
+    }
+);
+
+
+function calculate_row_weighted_score(
+    frm,
+    row
+) {
+
+    let rating =
+        flt(
+            row.rating
+        );
+
+    let skill_weightage =
+        flt(
+            row.weightage
+        );
+
+    if (rating < 0) {
+
+        rating = 0;
+
+        row.rating = 0;
+
+    }
+
+    if (rating > 5) {
+
+        frappe.msgprint(
+            __(
+                "Rating cannot be greater than 5"
+            )
+        );
+
+        rating = 5;
+
+        row.rating = 5;
+
+    }
+
+    let weighted_score =
+        rating *
+        skill_weightage /
+        100;
+
+    weighted_score =
+        round_interview_number(
+            weighted_score,
+            2
+        );
+
+    row.weighted_score =
+        weighted_score;
+
+    frm.refresh_field(
+        "rating_table"
+    );
+
+    calculate_overall_assessment(
+        frm
+    );
+
+}
+
+
+function calculate_overall_assessment(frm) {
 
     let rows =
-        frm.doc.interview_assesmant_rating_table || [];
+        frm.doc.rating_table || [];
 
+    if (!rows.length) {
 
-    // =====================================================
-    // NO ROWS
-    // =====================================================
+        frm.set_value(
+            "total_weightage",
+            0
+        );
 
-    if (rows.length === 0) {
+        frm.set_value(
+            "total_score",
+            0
+        );
 
         frm.set_value(
             "overall_percentage",
@@ -739,220 +900,192 @@ function calculate_weighted_percentage(frm) {
 
     }
 
+    let interview_round_totals = {};
 
-    // =====================================================
-    // VARIABLES
-    // =====================================================
+    rows.forEach(
+        function(row) {
 
-    let total_weighted_score = 0;
+            if (
+                !row.interview_round
+            ) {
 
-    let total_weightage = 0;
+                return;
 
+            }
 
-    // =====================================================
-    // LOOP THROUGH ALL SKILLS
-    // =====================================================
+            let round =
+                row.interview_round;
 
-    rows.forEach(function(row) {
+            let interview_weightage =
+                flt(
+                    row.interview_type_weightage
+                );
 
-        let rating =
-            flt(row.rating);
+            let rating =
+                flt(
+                    row.rating
+                );
 
+            if (rating < 0) {
+                rating = 0;
+            }
 
-        let weightage =
-            flt(row.weightage);
+            if (rating > 5) {
+                rating = 5;
+            }
 
+            let skill_weightage =
+                flt(
+                    row.weightage
+                );
 
-        // =================================================
-        // VALID DATA
-        // =================================================
+            let skill_score =
+                rating *
+                skill_weightage /
+                100;
 
-        if (
-            rating >= 0 &&
-            weightage > 0
-        ) {
+            skill_score =
+                round_interview_number(
+                    skill_score,
+                    2
+                );
 
-            // ---------------------------------------------
-            // Rating is out of 5
-            // ---------------------------------------------
+            row.weighted_score =
+                skill_score;
 
-            let weighted_score =
-                (rating / 5) *
-                weightage;
+            if (
+                !interview_round_totals[round]
+            ) {
 
+                interview_round_totals[round] = {
 
-            // ---------------------------------------------
-            // Round row score
-            // ---------------------------------------------
+                    score: 0,
 
-            weighted_score =
-                Math.round(
-                    weighted_score * 100
-                ) / 100;
+                    interview_weightage:
+                        interview_weightage
 
+                };
 
-            // ---------------------------------------------
-            // Add total
-            // ---------------------------------------------
+            }
 
-            total_weighted_score +=
-                weighted_score;
-
-
-            total_weightage +=
-                weightage;
-
-
-            console.log(
-                "Skill:",
-                row.skills_name
-            );
-
-            console.log(
-                "Rating:",
-                rating
-            );
-
-            console.log(
-                "Weightage:",
-                weightage
-            );
-
-            console.log(
-                "Weighted Score:",
-                weighted_score
-            );
+            interview_round_totals[round].score +=
+                skill_score;
 
         }
+    );
 
-    });
+    let final_score = 0;
 
+    let total_interview_weightage = 0;
 
-    // =====================================================
-    // FINAL OVERALL PERCENTAGE
-    // =====================================================
+    Object.keys(
+        interview_round_totals
+    ).forEach(
+        function(round) {
 
-    let overall_percentage = 0;
+            let data =
+                interview_round_totals[round];
 
+            let round_score =
+                round_interview_number(
+                    data.score,
+                    2
+                );
 
-    /*
-        If total weightage = 100%
+            let round_weightage =
+                flt(
+                    data.interview_weightage
+                );
 
-        Example:
+            let final_contribution =
+                round_score *
+                round_weightage /
+                100;
 
-        Rating 4, Weightage 50
-        = 4/5 × 50
-        = 40
+            final_contribution =
+                round_interview_number(
+                    final_contribution,
+                    2
+                );
 
-        Rating 5, Weightage 20
-        = 5/5 × 20
-        = 20
+            final_score +=
+                final_contribution;
 
-        Final = 60%
-    */
-
-
-    if (total_weightage > 0) {
-
-        // ---------------------------------------------
-        // Normal case: total weightage = 100
-        // ---------------------------------------------
-
-        if (total_weightage === 100) {
-
-            overall_percentage =
-                total_weighted_score;
-
-        }
-
-        else {
-
-            /*
-                If weightage is not 100,
-                normalize it to 100.
-            */
-
-            overall_percentage =
-                (
-                    total_weighted_score /
-                    total_weightage
-                ) * 100;
+            total_interview_weightage +=
+                round_weightage;
 
         }
+    );
 
-    }
+    final_score =
+        round_interview_number(
+            final_score,
+            2
+        );
 
+    total_interview_weightage =
+        round_interview_number(
+            total_interview_weightage,
+            2
+        );
 
-    // =====================================================
-    // ROUND TO 2 DECIMAL
-    // =====================================================
+    let overall_percentage =
+        final_score * 20;
 
     overall_percentage =
-        Math.round(
-            overall_percentage * 100
-        ) / 100;
+        round_interview_number(
+            overall_percentage,
+            2
+        );
 
-
-    // =====================================================
-    // MAXIMUM 100%
-    // =====================================================
-
-    if (overall_percentage > 100) {
+    if (
+        overall_percentage > 100
+    ) {
 
         overall_percentage = 100;
 
     }
 
+    frm.set_value(
+        "total_weightage",
+        total_interview_weightage
+    );
 
-    // =====================================================
-    // SET OVERALL PERCENTAGE
-    // =====================================================
+    frm.set_value(
+        "total_score",
+        final_score
+    );
 
     frm.set_value(
         "overall_percentage",
         overall_percentage
     );
 
-
-    // =====================================================
-    // REFRESH FIELDS
-    // =====================================================
-
     frm.refresh_field(
-        "interview_assesmant_rating_table"
+        "rating_table"
     );
 
-
-    frm.refresh_field(
-        "overall_percentage"
-    );
+}
 
 
-    // =====================================================
-    // CONSOLE
-    // =====================================================
+function round_interview_number(
+    value,
+    decimals
+) {
 
-    console.log(
-        "======================================"
-    );
+    let multiplier =
+        Math.pow(
+            10,
+            decimals
+        );
 
-    console.log(
-        "Total Weightage:",
-        total_weightage
-    );
-
-    console.log(
-        "Total Weighted Score:",
-        total_weighted_score
-    );
-
-    console.log(
-        "Overall Percentage:",
-        overall_percentage
-    );
-
-    console.log(
-        "======================================"
-    );
+    return Math.round(
+        (
+            value +
+            Number.EPSILON
+        ) *
+        multiplier
+    ) /
+    multiplier;
 
 }

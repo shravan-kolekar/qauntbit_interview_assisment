@@ -2,62 +2,72 @@
  "actions": [],
  "allow_bulk_edit": 1,
  "allow_rename": 1,
- "autoname": "field:skill_name",
- "creation": "2026-08-21 11:09:52.168435",
+ "autoname": "field:interview_round_type",
+ "creation": "2026-08-24 14:55:43.389508",
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
-  "interview_round",
-  "weitage",
-  "column_break_hspd",
-  "skill_name",
-  "priority"
+  "interview_round_type",
+  "active",
+  "column_break_vzxe",
+  "priority",
+  "weightage",
+  "amended_from"
  ],
  "fields": [
   {
-   "fieldname": "skill_name",
+   "fieldname": "interview_round_type",
    "fieldtype": "Data",
    "in_list_view": 1,
-   "label": "Skill Name",
+   "label": "Interview round type",
    "reqd": 1,
    "unique": 1
   },
   {
-   "fieldname": "weitage",
-   "fieldtype": "Percent",
-   "in_list_view": 1,
-   "label": "Weitage",
-   "non_negative": 1,
-   "reqd": 1
+   "fieldname": "column_break_vzxe",
+   "fieldtype": "Column Break"
   },
   {
-   "fieldname": "column_break_hspd",
-   "fieldtype": "Column Break"
+   "fieldname": "weightage",
+   "fieldtype": "Percent",
+   "in_list_view": 1,
+   "label": "Weightage",
+   "non_negative": 1,
+   "reqd": 1
   },
   {
    "fieldname": "priority",
    "fieldtype": "Select",
    "in_list_view": 1,
    "label": "Priority",
-   "options": "\nHigh\nMedium\nLow",
+   "options": "\nLow\nMedium\nHigh\nCritical",
    "reqd": 1
   },
   {
-   "fieldname": "interview_round",
+   "default": "0",
+   "fieldname": "active",
+   "fieldtype": "Check",
+   "label": "Active"
+  },
+  {
+   "fieldname": "amended_from",
    "fieldtype": "Link",
-   "in_list_view": 1,
-   "label": "Interview Round ",
+   "label": "Amended From",
+   "no_copy": 1,
    "options": "Interview Round Types",
-   "reqd": 1
+   "print_hide": 1,
+   "read_only": 1,
+   "search_index": 1
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
+ "is_submittable": 1,
  "links": [],
- "modified": "2026-08-24 16:11:54.767956",
+ "modified": "2026-08-24 16:10:53.584952",
  "modified_by": "Administrator",
  "module": "Qauntbit Interview Assisment",
- "name": "Skills Form",
+ "name": "Interview Round Types",
  "naming_rule": "By fieldname",
  "owner": "Administrator",
  "permissions": [

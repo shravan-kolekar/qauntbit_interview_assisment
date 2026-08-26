@@ -1,0 +1,72 @@
+{
+ "app": "qauntbit_interview_assisment",
+ "charts": [],
+ "content": "[{\"id\":\"52xNq3mlGz\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Interview Assessment</span>\",\"col\":12}},{\"id\":\"cZKvkmPYdr\",\"type\":\"card\",\"data\":{\"card_name\":\"Doctype\",\"col\":6}}]",
+ "creation": "2026-08-25 12:12:00.992826",
+ "custom_blocks": [],
+ "docstatus": 0,
+ "doctype": "Workspace",
+ "for_user": "",
+ "hide_custom": 0,
+ "icon": "",
+ "idx": 0,
+ "indicator_color": "green",
+ "is_hidden": 0,
+ "label": "Interview Assessment",
+ "link_type": "DocType",
+ "links": [
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Doctype",
+   "link_count": 3,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Interview rating form",
+   "link_count": 0,
+   "link_to": "Interview Assesment Form",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Create a interview round type",
+   "link_count": 0,
+   "link_to": "Interview Round Types",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Add skil related to interview round",
+   "link_count": 0,
+   "link_to": "Skills Form",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  }
+ ],
+ "modified": "2026-08-25 12:27:13.975545",
+ "modified_by": "Administrator",
+ "module": "Qauntbit Interview Assisment",
+ "name": "Interview Assessment",
+ "number_cards": [],
+ "owner": "Administrator",
+ "parent_page": "Home",
+ "public": 1,
+ "quick_lists": [],
+ "roles": [],
+ "sequence_id": 35.0,
+ "shortcuts": [],
+ "title": "Interview Assessment",
+ "type": "Workspace"
+}

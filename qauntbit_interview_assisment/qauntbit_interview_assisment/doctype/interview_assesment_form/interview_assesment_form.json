@@ -2,27 +2,28 @@
  "actions": [],
  "allow_bulk_edit": 1,
  "allow_rename": 1,
- "creation": "2026-08-21 10:18:55.292532",
+ "autoname": "naming_series:",
+ "creation": "2026-08-25 09:49:52.593612",
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
   "candidate_and_interview_information_section",
+  "naming_series",
   "applicent",
   "applicent_name",
   "interviwer_name",
-  "interview_round",
   "column_break_xfnn",
   "posting_applyed_for",
-  "employee_type",
+  "desiganation",
   "date_of_interview",
-  "interview_type",
+  "interview_round_type",
   "section_break_dwfp",
-  "interview_assesmant_rating_table",
+  "rating_table",
   "overall_assessment_section",
-  "overall_rating",
   "overall_percentage",
+  "total_weightage",
   "column_break_fcbd",
-  "average_score_auto",
+  "total_score",
   "recommendation",
   "feedback_section",
   "applicant_strengths_and_weaknesses",
@@ -30,23 +31,43 @@
   "overall_feedback_of_the_interviewer",
   "sign_off_section",
   "interviewer_signature",
+  "start_time",
+  "end_time",
   "column_break_rhaa",
-  "date"
+  "date",
+  "amended_from"
  ],
  "fields": [
   {
-   "fetch_from": "applicent.applicant_name",
-   "fieldname": "applicent_name",
-   "fieldtype": "Data",
-   "label": "Applicent Name",
-   "reqd": 1
+   "fieldname": "candidate_and_interview_information_section",
+   "fieldtype": "Section Break",
+   "label": "Candidate and interview information"
   },
   {
    "fieldname": "applicent",
    "fieldtype": "Link",
    "in_list_view": 1,
+   "in_standard_filter": 1,
    "label": "Appicent",
    "options": "Job Applicant",
+   "reqd": 1
+  },
+  {
+   "fetch_from": "applicent.applicant_name",
+   "fieldname": "applicent_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Applicent Name",
+   "reqd": 1
+  },
+  {
+   "fieldname": "interviwer_name",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Interviwer Name ",
+   "options": "Employee",
    "reqd": 1
   },
   {
@@ -54,50 +75,33 @@
    "fieldtype": "Column Break"
   },
   {
+   "fetch_from": "applicent.job_title",
    "fieldname": "posting_applyed_for",
-   "fieldtype": "Link",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
    "label": "Posting Applyed For",
    "options": "Job Opening",
    "reqd": 1
   },
   {
-   "fieldname": "interviwer_name",
-   "fieldtype": "Link",
-   "label": "Interviwer Name ",
-   "options": "Employee",
-   "reqd": 1
-  },
-  {
    "fieldname": "date_of_interview",
    "fieldtype": "Date",
-   "label": "Date Of Interview",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Date of Interview",
    "reqd": 1
   },
   {
-   "fetch_from": "posting_applyed_for.employment_type",
-   "fieldname": "employee_type",
+   "fieldname": "interview_round_type",
    "fieldtype": "Link",
-   "label": "Employee Type",
-   "options": "Employment Type",
-   "reqd": 1
+   "label": "Interview Round Type",
+   "options": "Interview Round Types"
   },
   {
-   "fieldname": "interview_round",
-   "fieldtype": "Select",
-   "label": "Interview Round",
-   "options": "\n1\n2\n3",
-   "reqd": 1
-  },
-  {
-   "fieldname": "interview_type",
-   "fieldtype": "Select",
-   "label": "Interview Type",
-   "options": "\nHr Round\nManager Round\nSupervisor  round"
-  },
-  {
-   "fieldname": "candidate_and_interview_information_section",
+   "fieldname": "section_break_dwfp",
    "fieldtype": "Section Break",
-   "label": "Candidate and interview information"
+   "label": "Rating Session"
   },
   {
    "fieldname": "overall_assessment_section",
@@ -105,20 +109,14 @@
    "label": "Overall assessment"
   },
   {
-   "fieldname": "overall_rating",
-   "fieldtype": "Rating",
-   "label": "Overall rating",
-   "reqd": 1
+   "fieldname": "overall_percentage",
+   "fieldtype": "Percent",
+   "hidden": 1,
+   "label": "Overall Prcentage"
   },
   {
    "fieldname": "column_break_fcbd",
    "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "average_score_auto",
-   "fieldtype": "Float",
-   "label": "Average score (auto)",
-   "read_only": 1
   },
   {
    "fieldname": "recommendation",
@@ -155,8 +153,7 @@
    "description": "Signature must be no white Page",
    "fieldname": "interviewer_signature",
    "fieldtype": "Attach",
-   "label": "Interviewer signature",
-   "reqd": 1
+   "label": "Interviewer signature"
   },
   {
    "fieldname": "column_break_rhaa",
@@ -165,32 +162,75 @@
   {
    "fieldname": "date",
    "fieldtype": "Datetime",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
    "label": "Date"
   },
   {
-   "fieldname": "section_break_dwfp",
-   "fieldtype": "Section Break"
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Interview Assesment Form",
+   "print_hide": 1,
+   "read_only": 1,
+   "search_index": 1
   },
   {
-   "fieldname": "interview_assesmant_rating_table",
+   "fieldname": "total_weightage",
+   "fieldtype": "Percent",
+   "hidden": 1,
+   "label": "Total weightage"
+  },
+  {
+   "fieldname": "total_score",
+   "fieldtype": "Float",
+   "hidden": 1,
+   "label": "Total score",
+   "read_only": 1
+  },
+  {
+   "fieldname": "rating_table",
    "fieldtype": "Table",
-   "label": "Interview Assesmant Rating Table",
-   "options": "Interview Assesmant Rating Table",
+   "label": "Rating Table",
+   "options": "Interview Assesmant Rating Table"
+  },
+  {
+   "fieldname": "naming_series",
+   "fieldtype": "Select",
+   "hidden": 1,
+   "label": "Naming Series",
+   "options": "INT-ASS-.YYYY.-.####"
+  },
+  {
+   "fetch_from": "applicent.designation",
+   "fieldname": "desiganation",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Desiganation",
    "reqd": 1
   },
   {
-   "fieldname": "overall_percentage",
-   "fieldtype": "Percent",
-   "label": "Overall Prcentage"
+   "fieldname": "start_time",
+   "fieldtype": "Time",
+   "label": "Start time "
+  },
+  {
+   "fieldname": "end_time",
+   "fieldtype": "Time",
+   "label": "End time"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
+ "is_submittable": 1,
  "links": [],
- "modified": "2026-08-21 11:54:28.911811",
+ "modified": "2026-08-25 17:46:13.735733",
  "modified_by": "Administrator",
  "module": "Qauntbit Interview Assisment",
  "name": "Interview Assesment Form",
+ "naming_rule": "By \"Naming Series\" field",
  "owner": "Administrator",
  "permissions": [
   {
