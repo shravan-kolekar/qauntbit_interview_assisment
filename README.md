@@ -205,7 +205,7 @@ flowchart TD
     S[Close Interview Process]
 
     A --> B
-    B --> d
+    B --> D
     D --> E
     E --> F
     F --> G
