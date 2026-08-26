@@ -185,7 +185,6 @@ flowchart TD
 
     A[Interview Round Type Master]
     B[Interview Skills and Assessment Criteria]
-    C[Rating Scale Configuration]
     D[Job Opening]
     E[Configure Interview Rounds]
     F[Job Applicant]
@@ -206,8 +205,7 @@ flowchart TD
     S[Close Interview Process]
 
     A --> B
-    B --> C
-    C --> D
+    B --> d
     D --> E
     E --> F
     F --> G
