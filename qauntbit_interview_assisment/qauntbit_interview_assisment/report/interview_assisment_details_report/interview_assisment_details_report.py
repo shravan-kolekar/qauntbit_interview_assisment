@@ -114,8 +114,8 @@ def get_data(filters=None):
 
 	parent_filters = {}
 
-	if filters.get("applicent"):
-		parent_filters["applicent"] = filters.get("applicent")
+	# if filters.get("applicent"):
+	# 	parent_filters["applicent"] = filters.get("applicent")
 
 	if filters.get("applicent_name"):
 		parent_filters["applicent_name"] = [
@@ -176,6 +176,7 @@ def get_data(filters=None):
 		total_weight_for_rating = 0
 
 		form_has_data = False
+		form_index_count = 0
 
 		for parent in forms:
 
@@ -222,26 +223,16 @@ def get_data(filters=None):
 						row["name"] = parent.name
 						row["applicent"] = parent.applicent
 						row["applicent_name"] = parent.applicent_name
-						row["posting_applyed_for"] = (
-							parent.posting_applyed_for
-						)
-						row["interviwer_name"] = (
-							parent.interviwer_name
-						)
-						row["date_of_interview"] = (
-							parent.date_of_interview
-						)
-						row["recommendation"] = (
-							parent.recommendation or ""
-						)
+						row["posting_applyed_for"] = parent.posting_applyed_for
+						row["interviwer_name"] = parent.interviwer_name
+						row["date_of_interview"] = parent.date_of_interview
+						row["recommendation"] = parent.recommendation or ""
 
 						first_child_row = False
 						form_has_data = True
 
 					row["interview_round"] = child.interview_round
-					row["interview_type_weightage"] = (
-						child.interview_type_weightage
-					)
+					row["interview_type_weightage"] = child.interview_type_weightage
 					row["skills_name"] = child.skills_name
 					row["weightage"] = child.weightage
 					row["rating"] = child.rating
@@ -273,6 +264,8 @@ def get_data(filters=None):
 						actual_weightage
 					)
 
+				form_index_count += 1
+
 			else:
 
 				if filters.get("interview_round"):
@@ -286,52 +279,31 @@ def get_data(filters=None):
 				row["name"] = parent.name
 				row["applicent"] = parent.applicent
 				row["applicent_name"] = parent.applicent_name
-				row["posting_applyed_for"] = (
-					parent.posting_applyed_for
-				)
-				row["interviwer_name"] = (
-					parent.interviwer_name
-				)
-				row["date_of_interview"] = (
-					parent.date_of_interview
-				)
-				row["recommendation"] = (
-					parent.recommendation or ""
-				)
+				row["posting_applyed_for"] = parent.posting_applyed_for
+				row["interviwer_name"] = parent.interviwer_name
+				row["date_of_interview"] = parent.date_of_interview
+				row["recommendation"] = parent.recommendation or ""
 
 				data.append(row)
 
 				form_has_data = True
+				form_index_count += 1
 
 		if not form_has_data:
 			continue
 
 		overall_rating = 0
 
-		if total_weight_for_rating > 0:
+		if total_weight_for_rating:
 			overall_rating = (
 				total_weighted_rating /
 				total_weight_for_rating
 			)
 
-		overall_rating = frappe.utils.flt(
-			overall_rating,
-			2
-		)
-
-		if filters.get("overall_rating") is not None:
-			filter_overall_rating = frappe.utils.flt(
-				filters.get("overall_rating"),
-				2
-			)
-
-			if overall_rating != filter_overall_rating:
-				continue
-
 		data.append({
 			"weighted_score": "<b>Overall Rating</b>",
 			"overall_rating": (
-				f"<b>{overall_rating} / 5</b>"
+				f"<b>{frappe.utils.flt(overall_rating, 2)} / 5</b>"
 			),
 		})
 
