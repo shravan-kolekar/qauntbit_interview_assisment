@@ -184,13 +184,13 @@ The interview process for the applicant can be stopped.
 flowchart TD
 
     A[Interview Round Type Master]
-    B[Interview Skills and Assessment Criteria]
+    B[Interview Skills ]
     D[Job Opening]
     E[Configure Interview Rounds]
     F[Job Applicant]
     G[Interview Assessment]
     H[Load Current Interview Round]
-    I[Load Assessment Criteria]
+    I[Load Assessment Skills]
     J[Enter Ratings and Remarks]
     K[Calculate Weighted Score]
     L[Calculate Overall Rating]
