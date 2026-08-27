@@ -192,7 +192,7 @@ function load_next_available_interview_round(frm) {
 
             let rounds =
                 job_response.message
-                    .job_interview_round || [];
+                    .custom_job_interview_round || [];
 
             rounds =
                 rounds
@@ -578,12 +578,12 @@ function get_round_weightage_from_job_opening(
 
                     if (
                         r.message &&
-                        r.message.job_interview_round
+                        r.message.custom_job_interview_round
                     ) {
 
                         let round =
                             r.message
-                                .job_interview_round
+                                .custom_job_interview_round
                                 .find(
                                     function(row) {
 

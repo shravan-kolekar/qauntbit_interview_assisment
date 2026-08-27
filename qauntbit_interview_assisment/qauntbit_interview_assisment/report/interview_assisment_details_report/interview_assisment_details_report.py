@@ -89,8 +89,8 @@ def get_columns():
 		{
 			"label": _("Rating"),
 			"fieldname": "rating",
-			"fieldtype": "Float",
-			"width": 100,
+			"fieldtype": "Data",
+			"width": 150,
 		},
 		{
 			"label": _("Weighted Score"),
@@ -98,12 +98,12 @@ def get_columns():
 			"fieldtype": "Data",
 			"width": 150,
 		},
-		{
-			"label": _("Overall Rating"),
-			"fieldname": "overall_rating",
-			"fieldtype": "HTML",
-			"width": 150,
-		},
+		# {
+		# 	"label": _("Overall Rating"),
+		# 	"fieldname": "overall_rating",
+		# 	"fieldtype": "HTML",
+		# 	"width": 150,
+		# },
 	]
 
 
@@ -301,13 +301,13 @@ def get_data(filters=None):
 			)
 
 		data.append({
-			"weighted_score": "<b>Overall Rating</b>",
-			"overall_rating": (
+			"rating": "<b>Overall Rating</b>",
+			"weighted_score": (
 				f"<b>{frappe.utils.flt(overall_rating, 2)} / 5</b>"
 			),
 		})
 
-		data.append({})
+		# data.append({})
 
 		sr_no += 1
 

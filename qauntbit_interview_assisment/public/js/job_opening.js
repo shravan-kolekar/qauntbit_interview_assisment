@@ -124,7 +124,7 @@ frappe.ui.form.on("Job Opening", {
 	validate: function (frm) {
 		let total_weitage = 0;
 
-		(frm.doc.job_interview_round || []).forEach(function (row) {
+		(frm.doc.custom_job_interview_round || []).forEach(function (row) {
 			if (row.weitage) {
 				total_weitage += flt(row.weitage);
 			}

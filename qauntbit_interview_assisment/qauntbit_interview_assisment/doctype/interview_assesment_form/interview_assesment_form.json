@@ -7,6 +7,9 @@
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
+  "start_time",
+  "column_break_djvu",
+  "end_time",
   "candidate_and_interview_information_section",
   "naming_series",
   "applicent",
@@ -30,9 +33,6 @@
   "column_break_zvni",
   "overall_feedback_of_the_interviewer",
   "sign_off_section",
-  "interviewer_signature",
-  "start_time",
-  "end_time",
   "column_break_rhaa",
   "date",
   "amended_from"
@@ -150,12 +150,6 @@
    "label": "Sign off"
   },
   {
-   "description": "Signature must be no white Page",
-   "fieldname": "interviewer_signature",
-   "fieldtype": "Attach",
-   "label": "Interviewer signature"
-  },
-  {
    "fieldname": "column_break_rhaa",
    "fieldtype": "Column Break"
   },
@@ -212,21 +206,29 @@
    "reqd": 1
   },
   {
+   "description": "Enter Start Time of Interview",
    "fieldname": "start_time",
    "fieldtype": "Time",
-   "label": "Start time "
+   "label": "Start time ",
+   "reqd": 1
   },
   {
+   "description": "Enter End Time of Interview",
    "fieldname": "end_time",
    "fieldtype": "Time",
-   "label": "End time"
+   "label": "End time",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_djvu",
+   "fieldtype": "Column Break"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2026-08-25 17:46:13.735733",
+ "modified": "2026-08-27 10:06:16.105111",
  "modified_by": "Administrator",
  "module": "Qauntbit Interview Assisment",
  "name": "Interview Assesment Form",

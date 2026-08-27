@@ -1,7 +1,7 @@
 {
  "app": "qauntbit_interview_assisment",
  "charts": [],
- "content": "[{\"id\":\"52xNq3mlGz\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Interview Assessment</span>\",\"col\":12}},{\"id\":\"cZKvkmPYdr\",\"type\":\"card\",\"data\":{\"card_name\":\"Doctype\",\"col\":6}}]",
+ "content": "[{\"id\":\"52xNq3mlGz\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Interview Assessment</span>\",\"col\":12}},{\"id\":\"cZKvkmPYdr\",\"type\":\"card\",\"data\":{\"card_name\":\"Doctype\",\"col\":6}},{\"id\":\"SRLE1u2tIh\",\"type\":\"card\",\"data\":{\"card_name\":\"Report\",\"col\":6}}]",
  "creation": "2026-08-25 12:12:00.992826",
  "custom_blocks": [],
  "docstatus": 0,
@@ -53,9 +53,28 @@
    "link_type": "DocType",
    "onboard": 0,
    "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Report",
+   "link_count": 1,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Interview Assisment Details Report",
+   "link_count": 0,
+   "link_to": "Interview Assisment Details Report",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
   }
  ],
- "modified": "2026-08-25 12:27:13.975545",
+ "modified": "2026-08-27 09:55:05.794178",
  "modified_by": "Administrator",
  "module": "Qauntbit Interview Assisment",
  "name": "Interview Assessment",
